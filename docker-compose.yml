@@ -1,0 +1,69 @@
+version: '3'
+services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    networks:
+      - prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/etc/prometheus
+      
+   #grafana结合prometheus图形化显示
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - prometheus
+    user: '0'
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=password
+      - GF_USERS_ALLOW_SIGN_UP=false
+
+ #监控docker容器
+  cadvisor:
+    image: registry.cn-shenzhen.aliyuncs.com/wenjusir/aju:cadvisor
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - 8099:8080
+    networks:
+      - prometheus
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+ #监控MySQL
+  mysql_exporter:
+    image: prom/mysqld-exporter
+    container_name: mysql_exporter
+    restart: unless-stopped
+    ports:
+      - 9104:9104
+    networks:
+      - prometheus
+    environment:
+      # DATA_SOURCE_NAME=监控MySQL用户名(用户需要开启授权):密码@(监控的MySQL地址或域名:端口)
+      - DATA_SOURCE_NAME=wenju:123456swj@(192.168.70.134:3306)/ 
+  #开启告警
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    restart: unless-stopped
+    ports:
+      - 9093:9093
+    networks:
+      - prometheus
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./alertmanager:/etc/alertmanager
+networks:
+  prometheus:

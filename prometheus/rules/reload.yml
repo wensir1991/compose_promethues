@@ -1,0 +1,19 @@
+groups:
+- name: prometheus.rules
+  rules:
+  - alert: AlertmanagerReloadFailed
+    expr: alertmanager_config_last_reload_successful == 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{$labels.instance}}: Alertmanager配置重新加载失败"
+      description: "{{$labels.instance}}: Alertmanager配置重新加载失败"
+  - alert: PrometheusReloadFailed
+    expr: prometheus_config_last_reload_successful == 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{$labels.instance}}: Prometheus配置重新加载失败"
+      description: "{{$labels.instance}}: Prometheus配置重新加载失败"

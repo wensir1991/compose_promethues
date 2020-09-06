@@ -1,0 +1,39 @@
+groups:
+- name: windows.rules
+  rules:
+  - alert: WindowsServerCollectorError
+    expr: wmi_exporter_collector_success == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Windows Server collector Error (instance {{ $labels.instance }})"
+      description: "Collector {{ $labels.collector }} was not successful\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: MongodbReplicationLag
+    expr: avg(mongodb_replset_member_optime_date{state="PRIMARY"}) - avg(mongodb_replset_member_optime_date{state="SECONDARY"}) > 10
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "MongoDB replication lag (instance {{ $labels.instance }})"
+      description: "Mongodb replication lag is more than 10s\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: LinkerdHighErrorRate
+    expr: sum(rate(request_errors_total[5m])) by (deployment, statefulset, daemonset) / sum(rate(request_total[5m])) by (deployment, statefulset, daemonset) * 100 > 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Linkerd high error rate (instance {{ $labels.instance }})"
+      description: "Linkerd error rate for {{ $labels.deployment | $labels.statefulset | $labels.daemonset }} is over 10%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: MinioDiskOffline
+    expr: minio_offline_disks > 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Minio disk offline (instance {{ $labels.instance }})"
+      description: "Minio disk is offline\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
