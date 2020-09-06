@@ -12,8 +12,8 @@ route:
 receivers:
 - name: 'SunWenJu'
   wechat_configs:
-  - corp_id: 'ww57897ab37f135427' #企业ID
+  - corp_id: 'ww578937f135427' #企业ID
     to_party: '1'  # 通知组ID
-    agent_id: '1000004'    
-    api_secret: '5n4S-1j4Q2AR0LGLwghYtpJa6ndRb3bGD2bkNr_SzQU' # 生成的secret
+    agent_id: '1004'    
+    api_secret: '5n4S-1j4Q2AR0LGLwghYtp3bGD2bkNr_SzQU' # 生成的secret
     send_resolved: true
